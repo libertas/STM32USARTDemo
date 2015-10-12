@@ -2,6 +2,7 @@
 #include "stm32f10x_flash.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_it.h"
+#include "stm32f10x_tim.h"
 
 void delay(void)
 {
@@ -29,6 +30,9 @@ void RCC_Config(void)
 		while(RCC_GetSYSCLKSource() != 0x08);
 	}
 	
+	// Enable Timer2 clock
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+	
 	// Enable USART1 and GPIOA clock
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
 }
@@ -37,8 +41,8 @@ void GPIO_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
-	// Define Tx pin
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+	// Define Tx pin and output pin
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -74,13 +78,40 @@ void NVIC_Config(void)
 		NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
 	#endif
 	*/
+	
+	// Set up USART interrupt
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+	
+	// Set up timer2 interrupt
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
+void Timer_Config(void)
+{
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef TIM_OCInitStructure;
+	
+	TIM_TimeBaseStructure.TIM_Period = 65535;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0;
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+	
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OCInitStructure.TIM_Pulse = 40000;
+	
+	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
+}
 
 void USART_Print(char str[])
 {
@@ -107,12 +138,25 @@ void USART1_IRQHandler(void)
 	}
 }
 
+void TIM2_IRQHandler(void)
+{
+	vu16 capture = 0;
+	if(TIM_GetITStatus(TIM2, TIM_IT_CC1) != RESET)
+	{
+		GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)(1 - GPIO_ReadOutputDataBit(GPIOA, GPIO_Pin_4)));
+		capture = TIM_GetCapture1(TIM2);
+		TIM_SetCompare1(TIM2, capture + 40000);
+		TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
+	}
+}
+
 int main(void)
 {
 	RCC_Config();
 	GPIO_Config();
 	NVIC_Config();
 	USART_Config();
+	Timer_Config();
 	
 	while(1)
 	{
