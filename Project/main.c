@@ -41,8 +41,8 @@ void GPIO_Config(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
-	// Define Tx pin and output pin
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_4;
+	// Define Tx pin
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -50,6 +50,12 @@ void GPIO_Config(void)
 	// Define Rx pin
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	// Define output pin
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
@@ -109,8 +115,11 @@ void Timer_Config(void)
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OCInitStructure.TIM_Pulse = 40000;
-	
 	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
+	
+	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Disable);
+	TIM_ITConfig(TIM2, TIM_IT_CC1, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
 }
 
 void USART_Print(char str[])
@@ -160,7 +169,6 @@ int main(void)
 	
 	while(1)
 	{
-		GPIO_ResetBits(GPIOA, GPIO_Pin_0);
 	}
 	return 0;
 }
