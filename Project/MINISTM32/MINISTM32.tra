@@ -1,0 +1,47 @@
+*** Creating Trace Output File '.\MINISTM32\MINISTM32.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '".\ministm32\main.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_it.o"'
+### List of Objects: adding '".\ministm32\init.o"'
+### List of Objects: adding '".\ministm32\misc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_adc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_bkp.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_can.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_cec.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_crc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_dac.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_dbgmcu.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_dma.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_exti.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_flash.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_fsmc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_gpio.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_i2c.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_iwdg.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_pwr.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_rcc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_rtc.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_sdio.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_spi.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_tim.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_usart.o"'
+### List of Objects: adding '".\ministm32\stm32f10x_wwdg.o"'
+### List of Objects: adding '".\ministm32\system_stm32f10x.o"'
+### List of Objects: adding '".\ministm32\core_cm3.o"'
+### List of Objects: adding '".\ministm32\startup_stm32f10x_hd.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M3 ".\ministm32\main.o" ".\ministm32\stm32f10x_it.o" ".\ministm32\init.o" ".\ministm32\misc.o" ".\ministm32\stm32f10x_adc.o" ".\ministm32\stm32f10x_bkp.o" ".\ministm32\stm32f10x_can.o" ".\ministm32\stm32f10x_cec.o" ".\ministm32\stm32f10x_crc.o" ".\ministm32\stm32f10x_dac.o" ".\ministm32\stm32f10x_dbgmcu.o" ".\ministm32\stm32f10x_dma.o" ".\ministm32\stm32f10x_exti.o" ".\ministm32\stm32f10x_flash.o" ".\ministm32\stm32f10x_fsmc.o" ".\ministm32\stm32f10x_gpio.o" ".\ministm32\stm32f10x_i2c.o" ".\ministm32\stm32f10x_iwdg.o" ".\ministm32\stm32f10x_pwr.o" ".\ministm32\stm32f10x_rcc.o" ".\ministm32\stm32f10x_rtc.o" ".\ministm32\stm32f10x_sdio.o" ".\ministm32\stm32f10x_spi.o" ".\ministm32\stm32f10x_tim.o" ".\ministm32\stm32f10x_usart.o" ".\ministm32\stm32f10x_wwdg.o" ".\ministm32\system_stm32f10x.o" ".\ministm32\core_cm3.o" ".\ministm32\startup_stm32f10x_hd.o" --library_type=microlib --strict --scatter ".\MINISTM32\MINISTM32.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\MINISTM32\MINISTM32.map" -o ".\MINISTM32\MINISTM32.axf"### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: '.\MINISTM32\MINISTM32.axf'
+### ADS-LD Command File: '.\MINISTM32\MINISTM32.lnp'
+### Checking for dirty Components...
+### Creating CmdFile '.\MINISTM32\MINISTM32.lnp', Handle=0x00001440
+### Writing '.lnp' file
+### ADS-LD Command file '.\MINISTM32\MINISTM32.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.
