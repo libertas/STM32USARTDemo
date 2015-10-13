@@ -3,6 +3,7 @@
 #include "stm32f10x_usart.h"
 #include "stm32f10x_it.h"
 #include "stm32f10x_tim.h"
+#include <stdio.h>
 
 void delay(void)
 {
@@ -132,30 +133,94 @@ void USART_Print(char str[])
 	}
 }
 
+uint8_t PWMState = 0;
+uint16_t PWMHighTime = 5000;
+uint16_t PWMLowTime = 5000;
+uint16_t PWMTotal = 10000;
+
 void USART1_IRQHandler(void)
 {
 	uint8_t data;
+	double freq, duty;
+	char buf[100] = {0};
 	
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 			data = USART_ReceiveData(USART1);
 			
-			if(data == '\n')
-				USART_Print("\nReceiving Process Completed!\n");
-			else if(data)
-				USART_SendData(USART1, data);
+			switch(data)
+			{
+				case 'w':
+					PWMHighTime += 1000;
+					PWMLowTime = PWMTotal - PWMHighTime;
+					break;
+				case 's':
+					PWMHighTime -= 1000;
+					PWMLowTime = PWMTotal - PWMHighTime;
+				case 'e':
+					PWMTotal /= 2;
+					PWMHighTime /= 2;
+					PWMLowTime /= 2;
+					break;
+				case 'd':
+					PWMTotal /= 2;
+					PWMHighTime *= 2;
+					PWMLowTime *= 2;
+					break;
+				default:
+					break;
+			}
+			
+			USART_SendData(USART1, data);
+			
+			freq = 72000000UL / ((uint32_t) PWMHighTime + (uint32_t) PWMLowTime);
+			duty = (double) PWMHighTime / ((double) PWMHighTime + (double) PWMLowTime);
+			
+			sprintf(buf, "\nFrequency:%lf Hz\n", freq);
+			USART_Print(buf);
+			
+			sprintf(buf, "\nDucy ratio:%lf\n", duty);
+			USART_Print(buf);
 	}
 }
 
 void TIM2_IRQHandler(void)
 {
-	vu16 capture = 0;
+	vu16 capture;
+	capture = TIM_GetCapture1(TIM2);
+	
 	if(TIM_GetITStatus(TIM2, TIM_IT_CC1) != RESET)
 	{
-		GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)(1 - GPIO_ReadOutputDataBit(GPIOA, GPIO_Pin_4)));
-		capture = TIM_GetCapture1(TIM2);
-		TIM_SetCompare1(TIM2, capture + 40000);
+		if(PWMHighTime == PWMTotal)
+		{
+			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_SET);
+			TIM_SetCompare1(TIM2, capture - 1);
+			PWMState = 1;
+			goto end;
+		}
+		
+		if(PWMLowTime == PWMTotal)
+		{
+			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_SET);
+			TIM_SetCompare1(TIM2, capture - 1);
+			PWMState = 0;
+			goto end;
+		}
+		
+		if(PWMState)
+		{
+			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_SET);
+			TIM_SetCompare1(TIM2, capture + PWMHighTime);
+		}
+		else if(PWMLowTime)
+		{
+			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_RESET);
+			TIM_SetCompare1(TIM2, capture + PWMLowTime);
+		}
+		
+		end:
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
+		PWMState = !PWMState;
 	}
 }
 
