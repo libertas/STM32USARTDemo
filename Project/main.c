@@ -157,13 +157,14 @@ void USART1_IRQHandler(void)
 				case 's':
 					PWMHighTime -= 1000;
 					PWMLowTime = PWMTotal - PWMHighTime;
+					break;
 				case 'e':
 					PWMTotal /= 2;
 					PWMHighTime /= 2;
 					PWMLowTime /= 2;
 					break;
 				case 'd':
-					PWMTotal /= 2;
+					PWMTotal *= 2;
 					PWMHighTime *= 2;
 					PWMLowTime *= 2;
 					break;
