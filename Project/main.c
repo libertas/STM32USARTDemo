@@ -212,7 +212,7 @@ void TIM2_IRQHandler(void)
 			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_SET);
 			TIM_SetCompare1(TIM2, capture + PWMHighTime);
 		}
-		else if(PWMLowTime)
+		else
 		{
 			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_RESET);
 			TIM_SetCompare1(TIM2, capture + PWMLowTime);
