@@ -202,7 +202,7 @@ void TIM2_IRQHandler(void)
 		
 		if(PWMLowTime == PWMTotal)
 		{
-			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_SET);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_4, Bit_RESET);
 			TIM_SetCompare1(TIM2, capture - 1);
 			PWMState = 0;
 			goto end;
