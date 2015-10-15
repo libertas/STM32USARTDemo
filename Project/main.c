@@ -219,9 +219,9 @@ void TIM2_IRQHandler(void)
 			TIM_SetCompare1(TIM2, capture + PWMLowTime);
 		}
 		
+		PWMState = !PWMState;
 		end:
 		TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
-		PWMState = !PWMState;
 	}
 }
 
