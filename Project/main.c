@@ -141,7 +141,8 @@ uint16_t PWMTotal = 10000;
 void USART1_IRQHandler(void)
 {
 	uint8_t data;
-	double freq, duty;
+	unsigned long freq;
+	double duty;
 	char buf[100] = {0};
 	
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
@@ -177,7 +178,7 @@ void USART1_IRQHandler(void)
 			freq = 72000000UL / ((uint32_t) PWMHighTime + (uint32_t) PWMLowTime);
 			duty = (double) PWMHighTime / ((double) PWMHighTime + (double) PWMLowTime);
 			
-			sprintf(buf, "\nFrequency:%lf Hz\n", freq);
+			sprintf(buf, "\nFrequency:%ld Hz\n", freq);
 			USART_Print(buf);
 			
 			sprintf(buf, "\nDucy ratio:%lf\n", duty);
