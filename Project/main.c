@@ -104,16 +104,12 @@ void Timer_Config(void)
 	
 	TIM_TimeBaseStructure.TIM_Period = 65535;
 	TIM_TimeBaseStructure.TIM_Prescaler = 0;
-	// TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 	
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
-	
-	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Disable);
+
 	TIM_ITConfig(TIM2, TIM_IT_CC1, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
 }
