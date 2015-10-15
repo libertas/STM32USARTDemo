@@ -5,6 +5,9 @@
 #include "stm32f10x_tim.h"
 #include <stdio.h>
 
+/*
+	Delay for a short time
+*/
 void delay(void)
 {
 	uint8_t n = 0;
@@ -13,22 +16,22 @@ void delay(void)
 
 void RCC_Config(void)
 {
-	RCC_DeInit();
-	RCC_HSEConfig(RCC_HSE_ON);
-	if(RCC_WaitForHSEStartUp() == SUCCESS)
+	RCC_DeInit();  // Reset RCC registers
+	RCC_HSEConfig(RCC_HSE_ON);  // HSE on
+	if(RCC_WaitForHSEStartUp() == SUCCESS)  // If well done
 	{
-		RCC_HCLKConfig(RCC_SYSCLK_Div1);
-		RCC_PCLK2Config(RCC_HCLK_Div1);
-		RCC_PCLK1Config(RCC_HCLK_Div2);
+		RCC_HCLKConfig(RCC_SYSCLK_Div1);  // HCLK = SYSCLK
+		RCC_PCLK1Config(RCC_HCLK_Div2);  // PCLK1 = HCLK / 2
+		RCC_PCLK2Config(RCC_HCLK_Div1);  // PCLK2 = HCLK
 		
-		FLASH_SetLatency(FLASH_Latency_2);
-		FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
+		FLASH_SetLatency(FLASH_Latency_2);  // Set flash latency
+		FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);  // Use prefetch buffer
 		
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
-		RCC_PLLCmd(ENABLE);
-		while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
-		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-		while(RCC_GetSYSCLKSource() != 0x08);
+		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);  // PLL = HSE, CPU frequency = 72MHz
+		RCC_PLLCmd(ENABLE);  // Use PLL
+		while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);  // Wait for PLL
+		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);  // Use PLL clock as system clock
+		while(RCC_GetSYSCLKSource() != 0x08);  // Wait
 	}
 	
 	// Enable Timer2 clock
@@ -64,27 +67,20 @@ void GPIO_Config(void)
 void USART_Config(void)
 {
 	USART_InitTypeDef USART_InitStructure;
-	USART_InitStructure.USART_BaudRate = 9600;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(USART1, &USART_InitStructure);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-	USART_Cmd(USART1, ENABLE);
+	USART_InitStructure.USART_BaudRate = 9600;  // Baud rate
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;  // Word length of 8 bits
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;  // Use only 1 stop bit
+	USART_InitStructure.USART_Parity = USART_Parity_No;  // No parity check
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // No hardware flow control
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;  // Enable sending and receiving
+	USART_Init(USART1, &USART_InitStructure);  // Init
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);  // Enable USART1 RXNE interrupt
+	USART_Cmd(USART1, ENABLE);  // Enable USART1
 }
 
 void NVIC_Config(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
-	/*
-	#ifdef VECT_TAB_RAM
-		NVIC_SetVectorTable(NVIC_VectTab_RAM, 0x0);
-	#else
-		NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
-	#endif
-	*/
 	
 	// Set up USART interrupt
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
@@ -108,14 +104,13 @@ void Timer_Config(void)
 	
 	TIM_TimeBaseStructure.TIM_Period = 65535;
 	TIM_TimeBaseStructure.TIM_Prescaler = 0;
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	// TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 	
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Timing;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	TIM_OCInitStructure.TIM_Pulse = 40000;
 	TIM_OC1Init(TIM2, &TIM_OCInitStructure);
 	
 	TIM_OC1PreloadConfig(TIM2, TIM_OCPreload_Disable);
